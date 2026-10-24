@@ -29,6 +29,9 @@ uninstall:
 	-launchctl bootout $(DOMAIN)/$(LABEL) 2>/dev/null
 	rm -f $(PLIST) $(BIN)
 
+restart:
+	launchctl kickstart -k $(DOMAIN)/$(LABEL)
+
 probe: brightkeys
 	./brightkeys --probe
 
@@ -38,4 +41,4 @@ logs:
 clean:
 	rm -f brightkeys
 
-.PHONY: install uninstall probe logs clean
+.PHONY: install uninstall restart probe logs clean

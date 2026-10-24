@@ -31,10 +31,41 @@ macOS will ask you to grant **Accessibility** to `~/.local/bin/brightkeys`. Do t
 
 ```sh
 make logs       # tail ~/Library/Logs/brightkeys.log
+make restart    # restart the agent (e.g. right after granting Accessibility)
 make uninstall  # stop the agent and remove everything
 ```
 
 > **Rebuilds reset the permission.** The binary is ad-hoc signed, so macOS treats each rebuild as a new app. After `make install` with changed code, remove the old brightkeys entry from Accessibility and grant it again.
+
+## Troubleshooting
+
+### I granted Accessibility, but the keys still change the built-in display
+
+macOS checks a program's Accessibility permission once, when the program starts. brightkeys restarts every 10 seconds until it has permission. Give it a few seconds, then check:
+
+```sh
+make logs
+```
+
+- `brightkeys: running` means it's working. Put the mouse on the external display and try the keys again.
+- `no Accessibility permission yet` means macOS still isn't letting it in. Keep going.
+
+To restart it straight away:
+
+```sh
+make restart
+```
+
+If the log still says `no Accessibility permission yet` after a restart:
+
+1. Open System Settings → Privacy & Security → Accessibility.
+2. Select every **brightkeys** entry and remove it with **−**. Old entries from earlier builds look enabled but don't apply to the current binary.
+3. Run `make restart`. macOS asks for permission again. Grant it.
+4. Within about 10 seconds, `make logs` should show `brightkeys: running`.
+
+### The log says `no DDC transport` or `DDC read failed`
+
+Run `make probe`. If it can't read your monitor, check whether the monitor has a **DDC/CI** setting in its on-screen menu and turn it on. Then connect over USB-C, Thunderbolt or DisplayPort. The built-in HDMI port on some Apple Silicon Macs doesn't pass DDC.
 
 ## How it works
 
