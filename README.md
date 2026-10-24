@@ -27,7 +27,7 @@ make probe     # optional: read-only check that your monitor answers DDC
 make install   # builds, installs to ~/.local/bin, starts a LaunchAgent
 ```
 
-macOS will ask you to grant **Accessibility** to `~/.local/bin/brightkeys`. Do that in System Settings → Privacy & Security → Accessibility. brightkeys waits for the permission and then starts working. It doesn't need a restart. The LaunchAgent starts it at login and restarts it if it ever exits.
+macOS will ask you to grant **Accessibility** to `~/.local/bin/brightkeys`. Do that in System Settings → Privacy & Security → Accessibility. brightkeys checks for the permission every 10 seconds and starts working within about 10 seconds of the grant. The LaunchAgent starts it at login and restarts it if it ever exits.
 
 ```sh
 make logs       # tail ~/Library/Logs/brightkeys.log

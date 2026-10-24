@@ -263,12 +263,13 @@ if CommandLine.arguments.dropFirst().first == "--probe" {
     exit(0)
 }
 
-// Swallowing events needs Accessibility. Prompt once, then wait for the grant
-// instead of exiting, so launchd doesn't spin us in a restart loop.
+// Swallowing events needs Accessibility. The trust check is cached for the
+// life of the process, so polling never sees a later grant. Exit instead and
+// let launchd (KeepAlive + ThrottleInterval) relaunch us to re-check.
 let promptKey = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
 if !AXIsProcessTrustedWithOptions([promptKey: true] as CFDictionary) {
-    log("waiting for Accessibility permission (System Settings → Privacy & Security → Accessibility)")
-    while !AXIsProcessTrusted() { sleep(2) }
+    log("no Accessibility permission yet (System Settings → Privacy & Security → Accessibility); retrying in 10s")
+    exit(1)
 }
 
 guard let tap = CGEvent.tapCreate(tap: .cgSessionEventTap,
